@@ -1,0 +1,6 @@
+import { listProducts } from "@/server/catalogue/catalogueService";
+export default async function handler(req, res) {
+  if (req.method !== "GET") { res.setHeader("Allow", ["GET"]); return res.status(405).json({ success: false, message: "Method not allowed." }); }
+  try { const result = await listProducts(req.query); if (result.error) return res.status(400).json({ success: false, message: result.error }); return res.status(200).json({ success: true, data: result.value }); }
+  catch (error) { console.error("Products API error:", error); return res.status(500).json({ success: false, message: "The catalogue is temporarily unavailable." }); }
+}

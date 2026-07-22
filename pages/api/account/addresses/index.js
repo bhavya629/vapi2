@@ -1,0 +1,3 @@
+import { allowMethods, requireCustomer, sendError } from "@/server/http/customerApi";
+import { AddressError, createAddress, listAddresses } from "@/server/addresses/addressService";
+export default async function handler(req,res){ if(!allowMethods(req,res,["GET","POST"]))return; const user=await requireCustomer(req,res);if(!user)return;try{if(req.method==="GET")return res.json({success:true,data:{addresses:await listAddresses(user.id)}});return res.status(201).json({success:true,data:{address:await createAddress(user.id,req.body)}})}catch(e){if(e instanceof AddressError)return sendError(res,e.status,e.code,e.message,e.details);console.error("address api",e);return sendError(res,500,"INTERNAL_ERROR","Unable to process address.")}}

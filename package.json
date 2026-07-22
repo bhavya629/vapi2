@@ -1,0 +1,37 @@
+{
+  "name": "vapi-2",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "catalogue:seed": "node prisma/seed.js",
+    "smartphones:cleanup": "node scripts/cleanup-demo-smartphones.js",
+    "test:variants": "node --test tests/smartphone-variants.test.mjs",
+    "admin:promote": "node scripts/promote-admin.js",
+    "admin:ensure-default": "node scripts/ensure-default-admin.js"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.9.0",
+    "@prisma/client": "^7.9.0",
+    "axios": "^1.18.1",
+    "bcryptjs": "^3.0.3",
+    "cookie": "^2.0.1",
+    "dotenv": "^17.4.2",
+    "jsonwebtoken": "^9.0.3",
+    "next": "16.2.10",
+    "pg": "^8.22.0",
+    "prisma": "^7.9.0",
+    "razorpay": "^2.9.8",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-hot-toast": "^2.6.0",
+    "react-icons": "^5.7.0"
+  },
+  "devDependencies": {
+    "eslint": "^9",
+    "eslint-config-next": "16.2.10"
+  }
+}

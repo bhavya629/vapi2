@@ -1,0 +1,3 @@
+import { allowMethods, requireCustomer, sendError } from "@/server/http/customerApi";
+import { AddressError, setDefaultAddress } from "@/server/addresses/addressService";
+export default async function handler(req,res){if(!allowMethods(req,res,["PATCH"]))return;const user=await requireCustomer(req,res);if(!user)return;try{return res.json({success:true,data:{address:await setDefaultAddress(user.id,String(req.query.id))}})}catch(e){if(e instanceof AddressError)return sendError(res,e.status,e.code,e.message,e.details);console.error("address default api",e);return sendError(res,500,"INTERNAL_ERROR","Unable to set default address.")}}

@@ -1,0 +1,46 @@
+.grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: 1.2fr 0.8fr;
+}
+.card {
+  background: #fff;
+  border: 1px solid #dfe7f1;
+  border-radius: 20px;
+  box-shadow: 0 9px 28px #18365b0f;
+  padding: 25px;
+}
+.stars {
+  color: #f5a400;
+  font-size: 24px;
+}
+.comment {
+  color: #536278;
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 22px;
+}
+.actions button {
+  background: #0575c4;
+  border: 0;
+  border-radius: 9px;
+  color: #fff;
+  font-weight: 800;
+  padding: 10px 13px;
+}
+.actions button:disabled {
+  opacity: 0.45;
+}
+.actions .delete {
+  background: #c72b37;
+}
+@media (max-width: 750px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

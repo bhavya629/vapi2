@@ -1,0 +1,1 @@
+import{WishlistError}from"./wishlistService";import{sendError}from"@/server/http/customerApi";export function fail(e,res,label){if(e instanceof WishlistError)return sendError(res,e.status,e.code,e.message);console.error(label,e.code||e.message);return sendError(res,500,"INTERNAL_ERROR","Wishlist request could not be completed.")}

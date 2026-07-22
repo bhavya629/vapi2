@@ -1,0 +1,106 @@
+.page {
+  background: #f5f8fc;
+  min-height: 75vh;
+  padding: 55px max(16px, calc((100% - 1100px) / 2)) 90px;
+}
+.page > header {
+  align-items: end;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 25px;
+}
+.page > header p {
+  color: #0575c4;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  margin: 0;
+}
+.page h1 {
+  font-size: 42px;
+  margin: 5px 0;
+}
+.page > header a {
+  background: #0575c4;
+  border-radius: 9px;
+  color: #fff;
+  padding: 11px 15px;
+  text-decoration: none;
+}
+.page > section {
+  display: grid;
+  gap: 13px;
+}
+.page article {
+  background: #fff;
+  border: 1px solid #dfe7ef;
+  border-radius: 18px;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: 100px 1fr;
+  padding: 20px;
+}
+.page article img {
+  background: #f2f6fa;
+  border-radius: 12px;
+  height: 100px;
+  object-fit: contain;
+  width: 100px;
+}
+.page article span,
+.page article strong {
+  display: block;
+}
+.page article strong {
+  color: #f5a400;
+  margin: 6px 0;
+}
+.page article h2 {
+  font-size: 18px;
+  margin: 8px 0;
+}
+.page article p {
+  color: #617086;
+}
+.page article small {
+  color: #77859a;
+}
+.page article div div {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+.page article a,
+.page article button {
+  border: 1px solid #cbd7e4;
+  border-radius: 8px;
+  color: #0575c4;
+  padding: 8px 11px;
+  text-decoration: none;
+}
+.page article button {
+  background: #fff;
+  color: #bd2632;
+}
+.empty {
+  background: #fff;
+  border-radius: 18px;
+  padding: 35px;
+  text-align: center;
+}
+@media (max-width: 600px) {
+  .page > header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .page > header a {
+    text-align: center;
+  }
+  .page article {
+    grid-template-columns: 1fr;
+  }
+  .page article img {
+    height: 150px;
+    width: 100%;
+  }
+}

@@ -1,0 +1,79 @@
+.uploader {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  width: 100%;
+}
+.fileInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+.preview {
+  width: 100%;
+  min-height: 150px;
+  border: 1px dashed #b8cbe2;
+  border-radius: 13px;
+  background: #f7faff;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: #64748b;
+  font-size: 12px;
+}
+.preview img {
+  width: 100%;
+  height: 150px;
+  object-fit: contain;
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.controls button {
+  flex: 1 1 130px;
+  border: 1px solid #0877e8;
+  border-radius: 9px;
+  padding: 9px 12px;
+  background: #0877e8;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+.controls .remove {
+  border-color: #efc1c5;
+  background: #fff5f5;
+  color: #b4232f;
+}
+.controls button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+.progress {
+  display: grid;
+  gap: 5px;
+  color: #475569;
+}
+.progress > div {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: #dfeaf7;
+}
+.progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #0877e8;
+  transition: width 0.15s ease;
+}
+.progress small {
+  font-weight: 700;
+}
+.controls button:focus-visible {
+  outline: 3px solid #ffb800;
+  outline-offset: 2px;
+}

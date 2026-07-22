@@ -1,0 +1,1 @@
+const buckets=new Map();export function checkRate(key,limit=5,windowMs=15*60*1000){const now=Date.now(),items=(buckets.get(key)||[]).filter(t=>now-t<windowMs);if(items.length>=limit)return false;items.push(now);buckets.set(key,items);if(buckets.size>5000)for(const[k,v]of buckets)if(!v.some(t=>now-t<windowMs))buckets.delete(k);return true}

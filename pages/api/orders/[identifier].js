@@ -1,0 +1,3 @@
+import { allowMethods, requireCustomer, sendError } from "@/server/http/customerApi";
+import { getOrder, OrderError } from "@/server/orders/orderService";
+export default async function handler(req,res){if(!allowMethods(req,res,["GET"]))return;const user=await requireCustomer(req,res);if(!user)return;try{return res.json({success:true,data:{order:await getOrder(user.id,String(req.query.identifier))}})}catch(e){if(e instanceof OrderError)return sendError(res,e.status,e.code,e.message,e.details);console.error("order detail api",e);return sendError(res,500,"INTERNAL_ERROR","Unable to load order.")}}

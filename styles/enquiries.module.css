@@ -1,0 +1,251 @@
+.page {
+  background: #f5f8fc;
+  color: #10182a;
+  min-height: 75vh;
+  padding: 55px 18px 90px;
+}
+.container {
+  margin: auto;
+  max-width: 1180px;
+}
+.header {
+  align-items: end;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 25px;
+}
+.header p {
+  color: #0575c4;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  margin: 0 0 7px;
+}
+.header h1 {
+  font-size: clamp(30px, 5vw, 45px);
+  margin: 0;
+}
+.header a,
+.primary {
+  background: #0575c4;
+  border: 0;
+  border-radius: 11px;
+  color: #fff;
+  font-weight: 800;
+  padding: 12px 17px;
+  text-decoration: none;
+}
+.filters {
+  background: #fff;
+  border: 1px solid #dce6f0;
+  border-radius: 16px;
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+  padding: 14px;
+}
+.filters label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-weight: 700;
+}
+.filters select,
+.filters input,
+.reply textarea {
+  border: 1px solid #ccd9e7;
+  border-radius: 10px;
+  font: inherit;
+  padding: 11px;
+}
+.list {
+  display: grid;
+  gap: 13px;
+}
+.card {
+  background: #fff;
+  border: 1px solid #dce6f0;
+  border-radius: 18px;
+  box-shadow: 0 8px 25px #18365b0d;
+  color: inherit;
+  display: grid;
+  gap: 10px;
+  padding: 21px;
+  text-decoration: none;
+  transition: 0.2s;
+}
+.card:hover {
+  border-color: #74c9ee;
+  transform: translateY(-2px);
+}
+.cardTop,
+.meta {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  justify-content: space-between;
+}
+.card h2 {
+  font-size: 18px;
+  margin: 0;
+}
+.card p {
+  color: #657389;
+  line-height: 1.6;
+  margin: 0;
+}
+.meta {
+  color: #657389;
+  font-size: 12px;
+  justify-content: flex-start;
+}
+.badge {
+  background: #eaf2fa;
+  border-radius: 99px;
+  color: #3f536d;
+  display: inline-flex;
+  font-size: 10px;
+  font-weight: 900;
+  padding: 6px 9px;
+  text-transform: uppercase;
+}
+.open,
+.in_review {
+  background: #e5f5ff;
+  color: #006cae;
+}
+.waiting_for_customer,
+.waiting_for_store {
+  background: #fff3d5;
+  color: #875e00;
+}
+.resolved {
+  background: #e5f8ee;
+  color: #087344;
+}
+.closed,
+.spam {
+  background: #edf0f4;
+  color: #5d6672;
+}
+.high,
+.urgent {
+  background: #ffebed;
+  color: #b51e2d;
+}
+.empty,
+.panel {
+  background: #fff;
+  border: 1px solid #dce6f0;
+  border-radius: 18px;
+  padding: 25px;
+}
+.empty {
+  text-align: center;
+}
+.back {
+  color: #0575c4;
+  display: inline-block;
+  font-weight: 800;
+  margin-bottom: 20px;
+  text-decoration: none;
+}
+.detailGrid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) 300px;
+}
+.conversation {
+  display: grid;
+  gap: 12px;
+}
+.message {
+  background: #f5f8fc;
+  border-radius: 14px;
+  padding: 15px;
+}
+.message.admin {
+  background: #e9f7ff;
+}
+.message.internal {
+  background: #fff5db;
+}
+.message strong,
+.message time {
+  display: block;
+}
+.message p {
+  white-space: pre-wrap;
+}
+.message time {
+  color: #738095;
+  font-size: 11px;
+  margin-top: 7px;
+}
+.reply {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+.reply textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+.side dl {
+  display: grid;
+  gap: 13px;
+  margin: 0;
+}
+.side dt {
+  color: #718096;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.side dd {
+  margin: 3px 0 0;
+}
+.pagination {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 22px;
+}
+.pagination button {
+  background: #fff;
+  border: 1px solid #ccd9e7;
+  border-radius: 9px;
+  padding: 9px 13px;
+}
+.error {
+  color: #b51e2d;
+}
+.page :focus-visible {
+  outline: 3px solid #ffb800;
+  outline-offset: 3px;
+}
+@media (max-width: 700px) {
+  .header {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .header a {
+    text-align: center;
+  }
+  .filters {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .detailGrid {
+    grid-template-columns: 1fr;
+  }
+  .page {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .card {
+    padding: 17px;
+  }
+}
