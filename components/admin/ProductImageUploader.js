@@ -4,16 +4,24 @@ import toast from "react-hot-toast";
 import styles from "@/styles/productImageUploader.module.css";
 
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const MAX_SIZE = 10 * 1024 * 1024;
+const MAX_SIZE = 8 * 1024 * 1024;
 const ENDPOINT = "/api/admin/uploads/products";
+
+function isCloudinaryProductImage(value) {
+  return (
+    value?.startsWith("https://res.cloudinary.com/") &&
+    value.includes("/cellphone-studio/products/")
+  );
+}
 
 function upload(file, metadata, onProgress) {
   return new Promise((resolve, reject) => {
     const request = new XMLHttpRequest();
     request.open("POST", ENDPOINT);
-    request.setRequestHeader("Content-Type", file.type);
+    const form = new FormData();
+    form.append("file", file);
     Object.entries(metadata).forEach(([key, value]) => {
-      if (value) request.setRequestHeader(key, value);
+      if (value) form.append(key, value);
     });
     request.upload.onprogress = (event) => {
       if (event.lengthComputable)
@@ -32,7 +40,7 @@ function upload(file, metadata, onProgress) {
     };
     request.onerror = () =>
       reject(new Error("Could not connect to the upload server."));
-    request.send(file);
+    request.send(form);
   });
 }
 
@@ -62,7 +70,7 @@ export default function ProductImageUploader({
       return;
     }
     if (file.size > MAX_SIZE) {
-      toast.error("Images must be 10 MB or smaller.");
+      toast.error("Images must be 8 MB or smaller.");
       return;
     }
     setBusy(true);
@@ -71,12 +79,12 @@ export default function ProductImageUploader({
       const result = await upload(
         file,
         {
-          "x-product-slug": productSlug || "draft-product",
-          "x-colour-slug": colourSlug,
-          "x-image-type": imageType,
-          "x-image-key": imageKey,
-          ...(value?.startsWith("/uploads/products/")
-            ? { "x-replace-url": value }
+          productSlug: productSlug || "draft-product",
+          colourSlug,
+          imageType,
+          imageKey,
+          ...(isCloudinaryProductImage(value)
+            ? { replaceUrl: value }
             : {}),
         },
         setProgress,
@@ -95,7 +103,7 @@ export default function ProductImageUploader({
   async function remove() {
     setBusy(true);
     try {
-      if (value?.startsWith("/uploads/products/")) {
+      if (isCloudinaryProductImage(value)) {
         const response = await fetch(
           `${ENDPOINT}?url=${encodeURIComponent(value)}`,
           {

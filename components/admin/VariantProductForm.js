@@ -311,7 +311,9 @@ export default function VariantProductForm({ product, onAccessory }) {
     });
   }
   function removeCombinationImage(imageUrl, vi, ci, ii) {
-    const sharedUpload = imageUrl?.startsWith("/uploads/products/");
+    const sharedUpload =
+      imageUrl?.startsWith("https://res.cloudinary.com/") &&
+      imageUrl.includes("/cellphone-studio/products/");
     setData((current) => ({
       ...current,
       variants: current.variants.map((variant, variantIndex) => ({

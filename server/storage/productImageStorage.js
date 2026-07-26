@@ -1,23 +1,21 @@
-import { mkdir, rename, unlink, writeFile } from "node:fs/promises";
-import path from "node:path";
+import { v2 as cloudinary } from "cloudinary";
 
-export const MAX_PRODUCT_IMAGE_SIZE = 10 * 1024 * 1024;
-export const PRODUCT_UPLOAD_URL = "/uploads/products";
+export const MAX_PRODUCT_IMAGE_SIZE = 8 * 1024 * 1024;
+export const PRODUCT_UPLOAD_FOLDER = "cellphone-studio/products";
 
-const MIME_EXTENSIONS = {
-  "image/jpeg": "jpg",
-  "image/png": "png",
-  "image/webp": "webp",
-};
+const ALLOWED_MIME_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+]);
 
-export function safeSegment(value, fallback) {
-  const segment = String(value || "")
-    .normalize("NFKD")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 80);
-  return segment || fallback;
+function configureCloudinary() {
+  const cloud_name = process.env.CLOUDINARY_CLOUD_NAME;
+  const api_key = process.env.CLOUDINARY_API_KEY;
+  const api_secret = process.env.CLOUDINARY_API_SECRET;
+  if (!cloud_name || !api_key || !api_secret)
+    throw new Error("CLOUDINARY_CONFIGURATION_MISSING");
+  cloudinary.config({ cloud_name, api_key, api_secret, secure: true });
 }
 
 function detectedMime(buffer) {
@@ -44,65 +42,66 @@ function detectedMime(buffer) {
   return null;
 }
 
-function uploadRoot() {
-  return path.resolve(process.cwd(), "public", "uploads", "products");
+function publicIdFromUrl(value) {
+  try {
+    const url = new URL(String(value || ""));
+    if (url.protocol !== "https:" || !url.hostname.endsWith("res.cloudinary.com"))
+      return null;
+    const marker = `/${PRODUCT_UPLOAD_FOLDER}/`;
+    const markerIndex = url.pathname.indexOf(marker);
+    if (markerIndex === -1) return null;
+    const relative = decodeURIComponent(
+      url.pathname.slice(markerIndex + marker.length),
+    ).replace(/\.[^/.]+$/, "");
+    return relative ? `${PRODUCT_UPLOAD_FOLDER}/${relative}` : null;
+  } catch {
+    return null;
+  }
 }
 
-function localPathFromUrl(url) {
-  if (!String(url || "").startsWith(`${PRODUCT_UPLOAD_URL}/`)) return null;
-  const relative = decodeURIComponent(
-    String(url).slice(PRODUCT_UPLOAD_URL.length + 1),
-  );
-  const root = uploadRoot();
-  const target = path.resolve(root, relative);
-  return target.startsWith(`${root}${path.sep}`) ? target : null;
+function uploadBuffer(buffer) {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder: PRODUCT_UPLOAD_FOLDER,
+        resource_type: "image",
+        allowed_formats: ["jpg", "jpeg", "png", "webp"],
+      },
+      (error, result) => (error ? reject(error) : resolve(result)),
+    );
+    stream.end(buffer);
+  });
 }
 
-export async function saveProductImage({
-  buffer,
-  claimedMime,
-  productSlug,
-  colourSlug,
-  imageType,
-  imageKey,
-  replaceUrl,
-}) {
+export async function saveProductImage({ buffer, claimedMime, replaceUrl }) {
   if (!buffer.length) throw new Error("EMPTY_FILE");
   if (buffer.length > MAX_PRODUCT_IMAGE_SIZE) throw new Error("FILE_TOO_LARGE");
   const mime = detectedMime(buffer);
-  if (!mime || !MIME_EXTENSIONS[mime] || claimedMime !== mime)
+  if (!mime || !ALLOWED_MIME_TYPES.has(claimedMime) || claimedMime !== mime)
     throw new Error("INVALID_IMAGE_TYPE");
 
-  const product = safeSegment(productSlug, "draft-product");
-  const colour = safeSegment(colourSlug, "default");
-  const type = safeSegment(imageType, "image");
-  const key = safeSegment(imageKey, "image").slice(-24);
-  const baseName = type === "other" ? `other-${key}` : type;
-  const extension = MIME_EXTENSIONS[mime];
-  const directory = path.join(uploadRoot(), product, colour);
-  const target = path.join(directory, `${baseName}.${extension}`);
-  const temporary = `${target}.${process.pid}-${Date.now()}.tmp`;
+  configureCloudinary();
+  const result = await uploadBuffer(buffer);
+  if (replaceUrl && replaceUrl !== result.secure_url)
+    await deleteProductImage(replaceUrl);
 
-  await mkdir(directory, { recursive: true });
-  await writeFile(temporary, buffer, { flag: "wx" });
-  await unlink(target).catch((error) => {
-    if (error.code !== "ENOENT") throw error;
-  });
-  await rename(temporary, target);
-
-  const url = `${PRODUCT_UPLOAD_URL}/${product}/${colour}/${baseName}.${extension}`;
-  if (replaceUrl && replaceUrl !== url) await deleteProductImage(replaceUrl);
-  return { url, mime, size: buffer.length };
+  return {
+    url: result.secure_url,
+    publicId: result.public_id,
+    mime,
+    size: buffer.length,
+  };
 }
 
-export async function deleteProductImage(url) {
-  const target = localPathFromUrl(url);
-  if (!target) return false;
-  try {
-    await unlink(target);
-    return true;
-  } catch (error) {
-    if (error.code === "ENOENT") return false;
-    throw error;
-  }
+export async function deleteProductImage(value) {
+  const publicId = String(value || "").startsWith(`${PRODUCT_UPLOAD_FOLDER}/`)
+    ? String(value)
+    : publicIdFromUrl(value);
+  if (!publicId) return false;
+  configureCloudinary();
+  const result = await cloudinary.uploader.destroy(publicId, {
+    resource_type: "image",
+    invalidate: true,
+  });
+  return result.result === "ok";
 }

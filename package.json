@@ -12,13 +12,16 @@
     "smartphones:cleanup": "node scripts/cleanup-demo-smartphones.js",
     "test:variants": "node --test tests/smartphone-variants.test.mjs",
     "admin:promote": "node scripts/promote-admin.js",
-    "admin:ensure-default": "node scripts/ensure-default-admin.js"
+    "admin:ensure-default": "node scripts/ensure-default-admin.js",
+    "create-admins": "node scripts/create-admins.js"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.0",
     "@prisma/client": "^7.9.0",
     "axios": "^1.18.1",
     "bcryptjs": "^3.0.3",
+    "busboy": "^1.6.0",
+    "cloudinary": "^2.10.0",
     "cookie": "^2.0.1",
     "dotenv": "^17.4.2",
     "jsonwebtoken": "^9.0.3",
