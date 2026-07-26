@@ -10,12 +10,28 @@ const ALLOWED_MIME_TYPES = new Set([
 ]);
 
 function configureCloudinary() {
-  const cloud_name = process.env.CLOUDINARY_CLOUD_NAME;
-  const api_key = process.env.CLOUDINARY_API_KEY;
-  const api_secret = process.env.CLOUDINARY_API_SECRET;
+  const cloud_name = String(process.env.CLOUDINARY_CLOUD_NAME || "").trim();
+  const api_key = String(process.env.CLOUDINARY_API_KEY || "").trim();
+  const api_secret = String(process.env.CLOUDINARY_API_SECRET || "").trim();
+
+  console.info("Cloudinary configuration check:", {
+    cloudNameExists: Boolean(cloud_name),
+    cloudNameLength: cloud_name.length,
+    apiKeyExists: Boolean(api_key),
+    apiKeyLength: api_key.length,
+    apiSecretExists: Boolean(api_secret),
+    apiSecretLength: api_secret.length,
+  });
+
   if (!cloud_name || !api_key || !api_secret)
     throw new Error("CLOUDINARY_CONFIGURATION_MISSING");
-  cloudinary.config({ cloud_name, api_key, api_secret, secure: true });
+
+  cloudinary.config({
+    cloud_name,
+    api_key,
+    api_secret,
+    secure: true,
+  });
 }
 
 function detectedMime(buffer) {
