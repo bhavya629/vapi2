@@ -24,6 +24,9 @@ export default async function handler(req, res) {
         message: "Your session has expired. Please sign in again.",
       },
     });
-  const { id, name, email, role, status } = auth.user;
-  return res.json({ success: true, user: { id, name, email, role, status } });
+  const { id, name, email, phone, role, status } = auth.user;
+  return res.json({
+    success: true,
+    user: { id, name, email, phone, role, status },
+  });
 }

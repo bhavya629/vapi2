@@ -88,7 +88,7 @@ export default function AdminSidebar({
           </span>
           <div>
             <strong>{user?.name}</strong>
-            <small>{user?.email}</small>
+            <small>{user?.phone || user?.email}</small>
           </div>
         </div>
         <Link className={styles.storeLink} href="/">

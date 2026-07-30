@@ -136,7 +136,9 @@ export async function recordEvent(
   return prisma.authEvent.create({
     data: {
       userId,
-      emailNormalized: String(email).trim().toLowerCase(),
+      emailNormalized: String(email || "")
+        .trim()
+        .toLowerCase(),
       eventType,
       success,
       failureReason,

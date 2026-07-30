@@ -506,7 +506,7 @@ export async function createOrder(user, input, headerKey) {
               deliveryCharge: pricing.deliveryCharge,
               discount: pricing.discount,
               tax: pricing.tax,
-              customerEmail: user.email,
+              customerEmail: user.email || "",
               addressLabel: address?.label,
               recipientName: address?.recipientName,
               shippingPhone: address?.phone,

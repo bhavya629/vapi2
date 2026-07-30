@@ -69,12 +69,11 @@ export default async function handler(req, res) {
     const name = String(req.body?.name || "")
         .trim()
         .replace(/\s+/g, " "),
-      phoneInput = String(req.body?.phone || ""),
-      phone = phoneInput.replace(/^(\+91|91)/, "").replace(/\D/g, "");
+      phone = String(req.body?.phone || "").trim();
     const fields = {};
     if (name.length < 2 || name.length > 100)
       fields.name = "Full name must be between 2 and 100 characters.";
-    if (phoneInput && !/^[6-9]\d{9}$/.test(phone))
+    if (!/^[6-9]\d{9}$/.test(phone))
       fields.phone = "Enter a valid 10-digit Indian mobile number.";
     if (Object.keys(fields).length)
       return res
@@ -91,7 +90,7 @@ export default async function handler(req, res) {
         });
     const updated = await prisma.user.update({
       where: { id: user.id },
-      data: { name, phone: phone || null },
+      data: { name, phone },
       select: safeUserSelect,
     });
     await recordEvent(req, {
@@ -105,6 +104,13 @@ export default async function handler(req, res) {
       user: updated,
     });
   } catch (error) {
+    if (error?.code === "P2002")
+      return sendError(
+        res,
+        409,
+        "MOBILE_ALREADY_REGISTERED",
+        "This mobile number is already registered. Please login instead.",
+      );
     console.error("Profile API error:", error);
     return sendError(
       res,

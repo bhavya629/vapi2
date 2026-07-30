@@ -6,16 +6,15 @@ import { useAuth } from "@/context/AuthContext";
 export default function Login() {
   const router = useRouter();
   const { login } = useAuth();
-  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setSubmitting(true);
-
     try {
-      const result = await login({ email, password });
+      const result = await login({ phone, password });
       toast.success("Login successful");
       const role = String(result.user?.role || "").toUpperCase();
       await router.replace(role === "ADMIN" ? "/admin" : "/");
@@ -30,13 +29,19 @@ export default function Login() {
     <main className="page-shell auth-page">
       <h1>Login</h1>
       <form className="auth-card" onSubmit={handleSubmit}>
-        <label htmlFor="email">Email</label>
+        <label htmlFor="phone">Mobile Number</label>
         <input
-          id="email"
-          name="email"
-          type="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
+          id="phone"
+          name="phone"
+          type="tel"
+          inputMode="numeric"
+          pattern="[6-9][0-9]{9}"
+          maxLength={10}
+          value={phone}
+          onChange={(event) =>
+            setPhone(event.target.value.replace(/\D/g, "").slice(0, 10))
+          }
+          autoComplete="tel"
           required
         />
 
@@ -47,6 +52,7 @@ export default function Login() {
           type="password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
+          autoComplete="current-password"
           required
         />
 
