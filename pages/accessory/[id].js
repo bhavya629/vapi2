@@ -567,7 +567,7 @@ export default function AccessoryDetailsPage() {
             )}
             {activeTab === "Reviews" && (
               <p>
-                <a href="#reviews">View verified customer reviews below.</a>
+                <a href="#reviews">View customer reviews or write your own.</a>
               </p>
             )}
           </div>

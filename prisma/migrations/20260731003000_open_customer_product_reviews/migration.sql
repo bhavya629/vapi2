@@ -1,0 +1,2 @@
+ALTER TABLE "Review" ALTER COLUMN "orderId" DROP NOT NULL;
+ALTER TABLE "Review" ALTER COLUMN "verifiedPurchase" SET DEFAULT false;

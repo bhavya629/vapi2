@@ -60,8 +60,8 @@ export default function ReviewDetail() {
             <h2>{review.title}</h2>
             <p className={r.comment}>{review.comment}</p>
             <p>
-              ✓ Verified Purchase · {review.helpfulCount} helpful ·{" "}
-              {review.reportCount} reports
+              {review.verifiedPurchase ? "✓ Verified Purchase · " : ""}
+              {review.helpfulCount} helpful · {review.reportCount} reports
             </p>
             <div className={r.actions}>
               {["APPROVED", "REJECTED", "HIDDEN", "PENDING"].map((x) => (
@@ -95,9 +95,11 @@ export default function ReviewDetail() {
             <p>
               <strong>Order</strong>
               <br />
-              {review.order.orderNumber}
+              {review.order?.orderNumber || "No linked order"}
               <br />
-              {review.order.status} · {review.order.paymentStatus}
+              {review.order
+                ? `${review.order.status} · ${review.order.paymentStatus}`
+                : "Customer review"}
             </p>
             <p>
               <strong>Status</strong>

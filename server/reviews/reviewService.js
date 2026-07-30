@@ -105,7 +105,7 @@ export async function productReviews(identifier, q = {}, userId) {
             : sort === "helpful"
               ? { helpfulCount: "desc" }
               : { createdAt: "desc" };
-  const [rows, total, own, purchase] = await prisma.$transaction([
+  const [rows, total, own] = await prisma.$transaction([
     prisma.review.findMany({
       where: { productId: product.id, status: "APPROVED" },
       select: publicSelect,
@@ -125,20 +125,10 @@ export async function productReviews(identifier, q = {}, userId) {
             rating: true,
             title: true,
             comment: true,
+            verifiedPurchase: true,
           },
         })
       : prisma.review.findFirst({ where: { id: "__none__" } }),
-    userId
-      ? prisma.order.findFirst({
-          where: {
-            userId,
-            status: "DELIVERED",
-            paymentStatus: "PAID",
-            items: { some: { productId: product.id } },
-          },
-          select: { id: true },
-        })
-      : prisma.order.findFirst({ where: { id: "__none__" } }),
   ]);
   return {
     product: {
@@ -157,8 +147,8 @@ export async function productReviews(identifier, q = {}, userId) {
     reviews: rows.map(map),
     eligibility: {
       authenticated: Boolean(userId),
-      verifiedPurchase: Boolean(purchase),
-      canReview: Boolean(userId && purchase && !own),
+      verifiedPurchase: Boolean(own?.verifiedPurchase),
+      canReview: Boolean(userId && !own),
       ownReview: own,
     },
     pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
@@ -177,12 +167,6 @@ export async function createReview(userId, input) {
       orderBy: { deliveredAt: "desc" },
       select: { id: true },
     });
-  if (!order)
-    throw new ReviewError(
-      403,
-      "VERIFIED_PURCHASE_REQUIRED",
-      "Only verified buyers with a delivered, paid order can review this product.",
-    );
   try {
     return await prisma.$transaction(async (tx) => {
       const review = await tx.review.create({
@@ -190,8 +174,9 @@ export async function createReview(userId, input) {
           ...data,
           productId: product.id,
           userId,
-          orderId: order.id,
-          verifiedPurchase: true,
+          orderId: order?.id || null,
+          verifiedPurchase: Boolean(order),
+          status: "APPROVED",
         },
         select: {
           id: true,
@@ -223,7 +208,12 @@ export async function updateOwn(userId, id, input) {
       throw new ReviewError(404, "REVIEW_NOT_FOUND", "Review not found.");
     const updated = await tx.review.update({
       where: { id },
-      data: { ...data, status: "PENDING" },
+      data: {
+        ...data,
+        status: ["HIDDEN", "REJECTED"].includes(review.status)
+          ? "PENDING"
+          : "APPROVED",
+      },
     });
     await recalculate(tx, review.productId);
     return updated;

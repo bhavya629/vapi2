@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
 import styles from "@/styles/reviews.module.css";
@@ -9,22 +9,28 @@ export default function ProductReviews({ productId }) {
     [page, setPage] = useState(1),
     [form, setForm] = useState({ rating: 5, title: "", comment: "" }),
     [busy, setBusy] = useState(false);
-  const load = () =>
-    productId &&
+  const load = useCallback(() => {
+    if (!productId) return;
     fetch(
       `/api/reviews/product/${encodeURIComponent(productId)}?sort=${sort}&page=${page}&limit=5`,
     )
       .then((r) => r.json())
-      .then((b) => setData(b.data))
+      .then((b) => {
+        setData(b.data);
+        const review = b.data?.eligibility?.ownReview;
+        if (review)
+          setForm({
+            rating: review.rating,
+            title: review.title,
+            comment: review.comment,
+          });
+      })
       .catch(() => toast.error("Unable to load reviews."));
+  }, [productId, sort, page]);
   useEffect(() => {
     load();
-  }, [productId, sort, page, user?.id]);
+  }, [load, user?.id]);
   const own = data?.eligibility?.ownReview;
-  useEffect(() => {
-    if (own)
-      setForm({ rating: own.rating, title: own.title, comment: own.comment });
-  }, [own?.id]);
   const submit = async (e) => {
     e.preventDefault();
     setBusy(true);
@@ -37,7 +43,11 @@ export default function ProductReviews({ productId }) {
         }),
         b = await r.json();
       if (!r.ok) throw Error(b.error?.message || "Unable to save review.");
-      toast.success("Review submitted for moderation.");
+      toast.success(
+        b.data.review.status === "APPROVED"
+          ? "Review published successfully."
+          : "Review submitted for moderation.",
+      );
       load();
     } catch (e) {
       toast.error(e.message);
@@ -126,7 +136,7 @@ export default function ProductReviews({ productId }) {
               </span>
               <h3>{r.title}</h3>
               <p>{r.comment}</p>
-              <small>✓ Verified Purchase</small>
+              {r.verifiedPurchase && <small>✓ Verified Purchase</small>}
               <footer>
                 <button onClick={() => act(r.id, "vote", { helpful: true })}>
                   Helpful ({r.helpfulCount})
@@ -160,12 +170,12 @@ export default function ProductReviews({ productId }) {
             Next
           </button>
         </div>
-        {user && data.eligibility.verifiedPurchase && (
+        {user && (
           <form className={styles.form} onSubmit={submit}>
             <h3>{own ? "Edit Your Review" : "Write a Review"}</h3>
             {own && (
               <p>
-                Status: <b>{own.status}</b>. Edits return to moderation.
+                Status: <b>{own.status}</b>.
               </p>
             )}
             <label>
@@ -223,10 +233,9 @@ export default function ProductReviews({ productId }) {
             </div>
           </form>
         )}
-        {user && !data.eligibility.verifiedPurchase && !own && (
+        {!user && (
           <p className={styles.notice}>
-            Reviews are available after a paid order containing this product is
-            delivered.
+            Sign in to write a review for this product.
           </p>
         )}
       </div>

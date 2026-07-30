@@ -234,7 +234,7 @@ export default function AccountPage() {
                 <Quick
                   icon={FiStar}
                   title="My Reviews"
-                  text="View and manage your verified-purchase reviews."
+                  text="View and manage your product reviews."
                   href="/account/reviews"
                 />
                 <Quick

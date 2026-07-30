@@ -72,8 +72,7 @@ export default function MyReviews() {
           <div className={styles.empty}>
             <h2>No reviews yet</h2>
             <p>
-              Verified buyers can review products after their paid order is
-              delivered.
+              Write a review from any smartphone or accessory product page.
             </p>
           </div>
         )}
