@@ -208,9 +208,9 @@ model Product {
   orderItems            OrderItem[]
   brand                 Brand                  @relation(fields: [brandId], references: [id])
   category              Category               @relation(fields: [categoryId], references: [id])
-  colours               ProductColour?
+  colours               ProductColour[]
   images                ProductImage[]
-  variants              ProductVariant?
+  variants              ProductVariant[]
   reviews               Review[]
   wishlistItems         WishlistItem[]
 
@@ -227,7 +227,7 @@ model Product {
 
 model ProductVariant {
   id           String                @id @default(cuid())
-  productId    String                @unique(map: "ProductVariant_one_default_per_product", where: raw("(\"isDefault\" = true)"))
+  productId    String
   ram          String
   storage      String
   isActive     Boolean               @default(true)
@@ -237,7 +237,7 @@ model ProductVariant {
   updatedAt    DateTime              @updatedAt
   orderItems   OrderItem[]
   product      Product               @relation(fields: [productId], references: [id], onDelete: Cascade)
-  combinations ProductVariantColour?
+  combinations ProductVariantColour[]
 
   @@unique([productId, ram, storage])
   @@index([productId, isActive, displayOrder])
@@ -245,7 +245,7 @@ model ProductVariant {
 
 model ProductColour {
   id           String                 @id @default(cuid())
-  productId    String                 @unique(map: "ProductColour_one_default_per_product", where: raw("(\"isDefault\" = true)"))
+  productId    String
   name         String
   slug         String
   hexCode      String?
@@ -264,7 +264,7 @@ model ProductColour {
 
 model ProductVariantColour {
   id                String                        @id @default(cuid())
-  productVariantId  String                        @unique(map: "ProductVariantColour_one_default_per_variant", where: raw("(\"isDefault\" = true)"))
+  productVariantId  String
   productColourId   String
   sku               String                        @unique
   price             Decimal                       @db.Decimal(10, 2)
@@ -282,7 +282,7 @@ model ProductVariantColour {
   orderItems        OrderItem[]
   colour            ProductColour                 @relation(fields: [productColourId], references: [id])
   variant           ProductVariant                @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
-  images            ProductVariantImage?
+  images            ProductVariantImage[]
   specifications    ProductVariantSpecification[]
 
   @@unique([productVariantId, productColourId])
@@ -307,7 +307,7 @@ model ProductVariantSpecification {
 
 model ProductVariantImage {
   id                     String               @id @default(cuid())
-  productVariantColourId String               @unique(map: "ProductVariantImage_one_primary_per_combination", where: raw("(\"isPrimary\" = true)"))
+  productVariantColourId String
   imageUrl               String
   altText                String?
   imageType              ProductImageType     @default(OTHER)
