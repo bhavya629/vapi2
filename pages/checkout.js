@@ -74,7 +74,7 @@ function CheckoutForm({ user, cart }) {
     [payment, setPayment] = useState("OFFLINE"),
     [saveAddress, setSaveAddress] = useState(false),
     [note, setNote] = useState(""),
-    [quote, setQuote] = useState(null),
+    [quoted, setQuoted] = useState(null),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false),
     key = useRef(null);
@@ -89,6 +89,18 @@ function CheckoutForm({ user, cart }) {
       })),
     [cart.cartItems],
   );
+  const quoteKey = useMemo(
+      () =>
+        JSON.stringify({
+          items,
+          fulfilment,
+          addressId,
+          newAddress:
+            fulfilment === "DELIVERY" && !addressId ? address : undefined,
+        }),
+      [items, fulfilment, addressId, address],
+    ),
+    quote = quoted?.key === quoteKey ? quoted.data : null;
   useEffect(() => {
     fetch("/api/account/addresses")
       .then((r) => r.json())
@@ -108,7 +120,6 @@ function CheckoutForm({ user, cart }) {
       address.state &&
       /^\d{6}$/.test(address.postalCode);
     if (fulfilment === "DELIVERY" && !addressId && !newAddressReady) {
-      setQuote(null);
       return;
     }
     const timer = setTimeout(async () => {
@@ -125,15 +136,15 @@ function CheckoutForm({ user, cart }) {
       });
       const j = await r.json();
       if (r.ok) {
-        setQuote(j.data);
+        setQuoted({ key: quoteKey, data: j.data });
         setError("");
       } else {
-        setQuote(null);
+        setQuoted(null);
         setError(j.error?.message || "Unable to verify your cart.");
       }
     }, 250);
     return () => clearTimeout(timer);
-  }, [items, fulfilment, addressId, address]);
+  }, [items, fulfilment, addressId, address, quoteKey]);
   if (!items.length)
     return (
       <>
