@@ -472,7 +472,10 @@ function CheckoutForm({ user, cart }) {
             {quote?.warnings?.map((w) => (
               <small key={w}>{w}</small>
             ))}
-            <button disabled={busy || !quote}>
+            <button
+              className={styles.placeOrderButton}
+              disabled={busy || !quote}
+            >
               {busy
                 ? "Processing..."
                 : quote?.delivery?.requiresConfirmation
@@ -481,7 +484,7 @@ function CheckoutForm({ user, cart }) {
                     ? "Continue to Secure Payment"
                     : "Place Order"}
             </button>
-            <small>
+            <small className={styles.orderNotice}>
               {payment === "ONLINE"
                 ? "Your cart clears only after server-verified payment."
                 : "Stock is deducted only after the database order succeeds."}

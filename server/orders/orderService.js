@@ -19,6 +19,15 @@ export class OrderError extends Error {
 }
 const money = (value) => new Prisma.Decimal(value || 0);
 const cash = (value) => money(value).toFixed(2);
+const retryableTransactionError = (error) => {
+  const message = String(error?.message || "").toLowerCase();
+  return (
+    ["P2002", "P2028", "P2034"].includes(error?.code) ||
+    message.includes("40001") ||
+    message.includes("deadlock") ||
+    message.includes("serialization")
+  );
+};
 const includeOrder = {
   items: true,
   payments: { orderBy: { createdAt: "desc" }, take: 1 },
@@ -660,15 +669,18 @@ export async function createOrder(user, input, headerKey) {
         },
         {
           isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
-          maxWait: 5000,
-          timeout: 15000,
+          maxWait: 10000,
+          timeout: 30000,
         },
       );
       return { order: mapOrder(result.order), created: result.created };
     } catch (error) {
       if (error instanceof OrderError) throw error;
-      if (error?.code === "P2034" || error?.code === "P2002") {
-        if (attempt < 2) continue;
+      if (retryableTransactionError(error) && attempt < 2) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, 75 * (attempt + 1)),
+        );
+        continue;
       }
       throw error;
     }
