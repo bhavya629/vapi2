@@ -41,7 +41,12 @@ function normalizeItem(product, productType, quantity = 1) {
       typeof product.brand === "string"
         ? product.brand
         : "The Cellphone Studio",
-    image: typeof product.image === "string" ? product.image : null,
+    image:
+      typeof product.image === "string" && product.image.trim()
+        ? product.image.trim()
+        : typeof product.imageUrl === "string" && product.imageUrl.trim()
+          ? product.imageUrl.trim()
+          : null,
     price: Number(product.price),
     originalPrice:
       Number(product.oldPrice || product.originalPrice) > Number(product.price)

@@ -146,13 +146,7 @@ function CartItem({ item, onRemove, increase, decrease, update }) {
         href={item.detailRoute}
         aria-label={`View ${item.name} details`}
       >
-        {item.image ? (
-          <Image src={item.image} alt={item.name} fill sizes="140px" />
-        ) : item.productType === "smartphone" ? (
-          <FiSmartphone aria-hidden="true" />
-        ) : (
-          <FiShoppingBag aria-hidden="true" />
-        )}
+        <CartProductImage item={item} />
       </Link>
       <div className={styles.itemDetails}>
         <p>{item.brand}</p>
@@ -225,6 +219,26 @@ function CartItem({ item, onRemove, increase, decrease, update }) {
         </button>
       </div>
     </article>
+  );
+}
+
+function CartProductImage({ item }) {
+  const [failedSource, setFailedSource] = useState(null);
+  if (!item.image || failedSource === item.image)
+    return item.productType === "smartphone" ? (
+      <FiSmartphone aria-hidden="true" />
+    ) : (
+      <FiShoppingBag aria-hidden="true" />
+    );
+  return (
+    <Image
+      src={item.image}
+      alt=""
+      fill
+      sizes="140px"
+      unoptimized
+      onError={() => setFailedSource(item.image)}
+    />
   );
 }
 
