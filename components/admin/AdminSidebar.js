@@ -19,20 +19,26 @@ import {
   FiX,
 } from "react-icons/fi";
 import styles from "@/styles/admin.module.css";
-const links = [
-  ["/admin", FiGrid, "Dashboard"],
-  ["/admin/products", FiPackage, "Products"],
-  ["/admin/categories", FiLayers, "Categories"],
-  ["/admin/brands", FiBox, "Brands"],
-  ["/admin/inventory", FiShoppingBag, "Inventory"],
-  ["/admin/orders", FiTruck, "Orders"],
-  ["/admin/customers", FiUsers, "Customers"],
-  ["/admin/reviews", FiStar, "Reviews"],
-  ["/admin/coupons", FiPercent, "Coupons"],
-  ["/admin/banners", FiImage, "Banners"],
-  ["/admin/settings", FiSettings, "Settings"],
-  ["/admin/enquiries", FiMessageSquare, "Enquiries"],
-  ["/admin/delivery-settings", FiTruck, "Delivery Settings"],
+const groups = [
+  ["Overview", [["/admin", FiGrid, "Dashboard"]]],
+  ["Catalogue", [
+    ["/admin/products", FiPackage, "Products"],
+    ["/admin/categories", FiLayers, "Categories"],
+    ["/admin/brands", FiBox, "Brands"],
+    ["/admin/inventory", FiShoppingBag, "Inventory"],
+  ]],
+  ["Commerce", [
+    ["/admin/orders", FiTruck, "Orders"],
+    ["/admin/customers", FiUsers, "Customers"],
+    ["/admin/reviews", FiStar, "Reviews"],
+  ]],
+  ["Store", [
+    ["/admin/coupons", FiPercent, "Coupons"],
+    ["/admin/banners", FiImage, "Banners"],
+    ["/admin/enquiries", FiMessageSquare, "Enquiries"],
+    ["/admin/delivery-settings", FiTruck, "Delivery Settings"],
+    ["/admin/settings", FiSettings, "Settings"],
+  ]],
 ];
 export default function AdminSidebar({
   user,
@@ -61,21 +67,27 @@ export default function AdminSidebar({
           <FiChevronLeft />
         </button>
         <nav aria-label="Admin navigation">
-          {links.map(([href, Icon, label]) => (
-            <Link
-              className={
-                router.pathname === href ||
-                (href !== "/admin" && router.pathname.startsWith(`${href}/`))
-                  ? styles.active
-                  : ""
-              }
-              href={href}
-              onClick={onClose}
-              key={href}
-            >
-              <Icon />
-              <span>{label}</span>
-            </Link>
+          {groups.map(([group, links]) => (
+            <div className={styles.navGroup} key={group}>
+              <small>{group}</small>
+              {links.map(([href, Icon, label]) => (
+                <Link
+                  className={
+                    router.pathname === href ||
+                    (href !== "/admin" && router.pathname.startsWith(`${href}/`))
+                      ? styles.active
+                      : ""
+                  }
+                  href={href}
+                  onClick={onClose}
+                  title={collapsed ? label : undefined}
+                  key={href}
+                >
+                  <Icon />
+                  <span>{label}</span>
+                </Link>
+              ))}
+            </div>
           ))}
         </nav>
         <div className={styles.adminUser}>

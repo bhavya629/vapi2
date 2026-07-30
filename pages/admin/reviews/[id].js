@@ -85,7 +85,7 @@ export default function ReviewDetail() {
               <br />
               {review.user.name}
               <br />
-              {review.user.email}
+              {review.user.phone || review.user.email || "No contact"}
             </p>
             <p>
               <strong>Product</strong>

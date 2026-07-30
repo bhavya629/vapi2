@@ -386,7 +386,7 @@ export async function adminReviews(q = {}) {
       where,
       include: {
         product: { select: { id: true, name: true, slug: true } },
-        user: { select: { id: true, name: true, email: true } },
+        user: { select: { id: true, name: true, email: true, phone: true } },
         order: { select: { orderNumber: true } },
       },
       orderBy:
@@ -408,7 +408,7 @@ export async function adminDetail(id) {
       product: {
         select: { id: true, name: true, slug: true, productType: true },
       },
-      user: { select: { id: true, name: true, email: true } },
+      user: { select: { id: true, name: true, email: true, phone: true } },
       order: {
         select: { orderNumber: true, status: true, paymentStatus: true },
       },

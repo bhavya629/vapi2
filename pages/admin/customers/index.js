@@ -115,7 +115,7 @@ export default function Customers() {
                         <strong>{x.name}</strong>
                       </td>
                       <td>
-                        {x.email}
+                        {x.phone || x.email || "No contact"}
                         <br />
                         <small>{x.phone || "No phone"}</small>
                       </td>
@@ -147,7 +147,7 @@ export default function Customers() {
               <article key={x.id}>
                 <strong>{x.name}</strong>
                 <p>
-                  {x.email}
+                  {x.phone || x.email || "No contact"}
                   <br />
                   {x.phone || "No phone"}
                 </p>

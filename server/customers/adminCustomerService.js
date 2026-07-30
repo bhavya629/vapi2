@@ -224,7 +224,7 @@ export async function changeCustomerStatus(id, input, admin, meta = {}) {
     prisma.authEvent.create({
       data: {
         userId: id,
-        emailNormalized: customer.email,
+        emailNormalized: customer.email || customer.phone || "",
         eventType,
         success: true,
         deviceLabel: "Administrative action",
@@ -267,6 +267,7 @@ export async function customerStats() {
           id: true,
           name: true,
           email: true,
+          phone: true,
           status: true,
           createdAt: true,
         },

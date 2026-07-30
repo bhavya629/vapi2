@@ -108,7 +108,7 @@ export default function Reviews() {
                     <td>
                       {r.user.name}
                       <br />
-                      <small>{r.user.email}</small>
+                      <small>{r.user.phone || r.user.email || "No contact"}</small>
                     </td>
                     <td>{"★".repeat(r.rating)}</td>
                     <td>{r.status}</td>

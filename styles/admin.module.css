@@ -24,6 +24,7 @@
   padding: 24px 17px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   z-index: 100;
 }
 .brand {
@@ -48,9 +49,27 @@
   display: none;
 }
 .sidebar nav {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: #36526f transparent;
+  scrollbar-width: thin;
+  margin: 14px -5px 10px 0;
+  padding-right: 7px;
+}
+.navGroup {
   display: grid;
-  gap: 5px;
-  margin: 23px 0;
+  gap: 4px;
+  margin-bottom: 14px;
+}
+.navGroup > small {
+  color: #6f879f;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  padding: 5px 12px;
+  text-transform: uppercase;
 }
 .sidebar nav a,
 .storeLink,
@@ -74,7 +93,7 @@
   color: #fff;
 }
 .adminUser {
-  margin-top: auto;
+  flex: 0 0 auto;
   padding: 16px 8px;
   display: flex;
   gap: 10px;
@@ -106,10 +125,12 @@
 }
 .storeLink {
   color: #88dafd;
+  flex: 0 0 auto;
 }
 .logout {
   color: #ff9ba2;
   width: 100%;
+  flex: 0 0 auto;
 }
 .main {
   flex: 1 1 auto;
@@ -184,6 +205,32 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
 }
+.metricSection {
+  margin-bottom: 28px;
+}
+.sectionHeading {
+  align-items: end;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 13px;
+}
+.sectionHeading h2 {
+  font-size: 19px;
+  margin: 0;
+}
+.sectionHeading p {
+  color: #64748b;
+  font-size: 13px;
+  margin: 4px 0 0;
+}
+.metricGrid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.compactMetrics {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
 .stat,
 .panel,
 .tableCard,
@@ -194,7 +241,19 @@
   box-shadow: 0 9px 28px rgba(24, 54, 91, 0.06);
 }
 .stat {
+  align-items: center;
+  color: inherit;
+  display: flex;
+  gap: 14px;
+  min-width: 0;
   padding: 21px;
+  text-decoration: none;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+.stat:hover {
+  border-color: #8ad6fa;
+  box-shadow: 0 12px 30px rgba(24, 54, 91, 0.1);
+  transform: translateY(-2px);
 }
 .stat span {
   width: 42px;
@@ -209,10 +268,63 @@
 .stat strong {
   font-size: 27px;
   display: block;
-  margin: 14px 0 2px;
+  margin: 0 0 2px;
+  overflow-wrap: anywhere;
 }
 .stat small {
   color: #5a6478;
+}
+.metric_warning {
+  border-color: #f2d78d;
+}
+.metric_warning span {
+  background: #fff6dc;
+  color: #9a6700;
+}
+.metric_danger {
+  border-color: #f3b7bc;
+}
+.metric_danger span {
+  background: #fff0f1;
+  color: #c52a36;
+}
+.compactMetrics .stat {
+  align-items: flex-start;
+  flex-direction: column;
+  padding: 17px;
+}
+.compactMetrics .stat strong {
+  font-size: 23px;
+}
+.pipeline {
+  display: grid;
+  gap: 16px;
+}
+.pipelineRow {
+  align-items: center;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(130px, 1fr) 2fr 32px;
+}
+.pipelineRow > span {
+  color: #526176;
+  font-size: 13px;
+}
+.pipelineRow i {
+  background: #e9f0f7;
+  border-radius: 99px;
+  height: 9px;
+  overflow: hidden;
+}
+.pipelineRow b {
+  background: linear-gradient(90deg, #0575c4, #08a9f4);
+  border-radius: inherit;
+  display: block;
+  height: 100%;
+  min-width: 3px;
+}
+.pipelineRow > strong {
+  text-align: right;
 }
 .twoColumn {
   display: grid;
@@ -623,6 +735,10 @@
   .cards {
     grid-template-columns: 1fr 1fr;
   }
+  .metricGrid,
+  .compactMetrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 @media (max-width: 800px) {
   .shell {
@@ -697,8 +813,25 @@
   }
   .grid,
   .cards,
-  .formGrid {
+  .formGrid,
+  .metricGrid,
+  .compactMetrics {
     grid-template-columns: 1fr;
+  }
+  .metricSection {
+    margin-bottom: 22px;
+  }
+  .stat,
+  .compactMetrics .stat {
+    align-items: center;
+    flex-direction: row;
+  }
+  .pipelineRow {
+    grid-template-columns: 1fr 32px;
+  }
+  .pipelineRow i {
+    grid-column: 1 / -1;
+    grid-row: 2;
   }
   .fieldFull {
     grid-column: auto;
@@ -748,12 +881,17 @@
   width: 82px;
 }
 .shellCollapsed .sidebar nav a span,
+.shellCollapsed .navGroup > small,
 .shellCollapsed .adminUser div,
 .shellCollapsed .brand strong,
-.shellCollapsed .brand span {
+.shellCollapsed .brand span,
+.shellCollapsed .storeLink span,
+.shellCollapsed .logout span {
   display: none;
 }
-.shellCollapsed .sidebar nav a {
+.shellCollapsed .sidebar nav a,
+.shellCollapsed .storeLink,
+.shellCollapsed .logout {
   justify-content: center;
 }
 .collapseButton {
@@ -804,7 +942,8 @@
   padding: 11px;
   width: 100%;
 }
-.adminTopbar > button {
+.adminTopbar > button,
+.topIcon {
   border: 0;
   background: #f2f7fc;
   border-radius: 10px;
@@ -812,14 +951,11 @@
   position: relative;
   cursor: pointer;
 }
-.adminTopbar > button > span {
-  position: absolute;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #ef4444;
-  right: 7px;
-  top: 7px;
+.topIcon {
+  color: #26364d;
+  display: grid;
+  place-items: center;
+  text-decoration: none;
 }
 .adminTopbar div strong,
 .adminTopbar div small {
@@ -864,6 +1000,20 @@
   .shellCollapsed .sidebar {
     width: 260px;
     flex-basis: auto;
+  }
+  .shellCollapsed .sidebar nav a span,
+  .shellCollapsed .navGroup > small,
+  .shellCollapsed .adminUser div,
+  .shellCollapsed .brand strong,
+  .shellCollapsed .brand span,
+  .shellCollapsed .storeLink span,
+  .shellCollapsed .logout span {
+    display: block;
+  }
+  .shellCollapsed .sidebar nav a,
+  .shellCollapsed .storeLink,
+  .shellCollapsed .logout {
+    justify-content: flex-start;
   }
   .adminTopbar,
   .collapseButton {

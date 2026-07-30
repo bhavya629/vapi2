@@ -55,7 +55,7 @@ export default function CustomerDetail() {
               <div>
                 <h2>{u.name}</h2>
                 <span>
-                  {u.email} · {u.phone || "No phone"}
+                  {u.phone || "No phone"}{u.email ? ` · ${u.email}` : ""}
                 </span>
               </div>
               <EnquiryBadge value={u.status} />
@@ -70,12 +70,12 @@ export default function CustomerDetail() {
             </div>
             <div className={c.actions}>
               <Link
-                href={`/admin/orders?search=${encodeURIComponent(u.email)}`}
+                href={`/admin/orders?search=${encodeURIComponent(u.phone || u.email || u.id)}`}
               >
                 View Orders
               </Link>
               <Link
-                href={`/admin/enquiries?search=${encodeURIComponent(u.email)}`}
+                href={`/admin/enquiries?search=${encodeURIComponent(u.phone || u.email || u.id)}`}
               >
                 View Enquiries
               </Link>

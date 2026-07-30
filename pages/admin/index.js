@@ -35,84 +35,33 @@ export default function AdminDashboard() {
         <AdminState loading={loading} error={error} retry={retry} />
       ) : (
         <>
-          <section className={styles.grid}>
-            {[
-              [
-                FiPackage,
-                data.stats.activeProducts + data.stats.inactiveProducts,
-                "Total Products",
-              ],
-              [FiShoppingBag, data.orders.total, "Total Orders"],
-              [FiShoppingBag, data.orders.today, "Today's Orders"],
-              [
-                FiStar,
-                `₹${data.orders.revenue.toLocaleString("en-IN")}`,
-                "Revenue",
-              ],
-              [
-                FiUsers,
-                data.customers.active + data.customers.suspended,
-                "Customers",
-              ],
-              [
-                FiBox,
-                data.stats.lowStock + data.stats.outOfStock,
-                "Low Stock Alerts",
-              ],
-              [
-                FiShoppingBag,
-                data.orders.awaitingConfirmation,
-                "Awaiting Confirmation",
-              ],
-              [FiPackage, data.orders.active, "Confirmed / Processing"],
-              [FiPackage, data.orders.packed, "Packed"],
-              [FiShoppingBag, data.orders.outForDelivery, "Out for Delivery"],
-              [FiShoppingBag, data.orders.readyForPickup, "Ready for Pickup"],
-              [FiStar, data.orders.deliveredToday, "Delivered Today"],
-              [FiBox, data.orders.cancelledToday, "Cancelled Today"],
-              [FiPackage, data.stats.activeProducts, "Active Products"],
-              [FiMessageSquare, data.enquiries.open, "Open Enquiries"],
-              [
-                FiMessageSquare,
-                data.enquiries.highPriority,
-                "High Priority Enquiries",
-              ],
-              [FiUsers, data.customers.active, "Active Customers"],
-              [FiUsers, data.customers.newToday, "New Customers Today"],
-              [FiUsers, data.customers.newMonth, "New Customers This Month"],
-              [FiUsers, data.customers.suspended, "Suspended Customers"],
-              [FiUsers, data.customers.withOrders, "Customers With Orders"],
-              [FiStar, data.reviews.pending, "Pending Reviews"],
-              [FiStar, data.reviews.averageRating.toFixed(1), "Average Rating"],
-              [FiStar, data.reviews.hidden, "Hidden Reviews"],
-            ].map(([Icon, value, label]) => (
-              <article className={styles.stat} key={label}>
-                <span>
-                  <Icon />
-                </span>
-                <strong>{value}</strong>
-                <small>{label}</small>
-              </article>
-            ))}
-          </section>
+          <MetricSection title="Business overview" description="At-a-glance store performance" primary>
+            <Metric icon={FiStar} value={`₹${data.orders.revenue.toLocaleString("en-IN")}`} label="Revenue" href="/admin/orders" />
+            <Metric icon={FiShoppingBag} value={data.orders.today} label="Orders Today" href="/admin/orders" />
+            <Metric icon={FiPackage} value={data.stats.activeProducts} label="Active Products" href="/admin/products" />
+            <Metric icon={FiUsers} value={data.customers.active} label="Active Customers" href="/admin/customers" />
+          </MetricSection>
+          <MetricSection title="Needs attention" description="Items that may require action">
+            <Metric icon={FiShoppingBag} value={data.orders.awaitingConfirmation} label="Awaiting Confirmation" href="/admin/orders" tone="warning" />
+            <Metric icon={FiBox} value={data.stats.lowStock + data.stats.outOfStock} label="Stock Alerts" href="/admin/inventory" tone="danger" />
+            <Metric icon={FiMessageSquare} value={data.enquiries.highPriority} label="High Priority Enquiries" href="/admin/enquiries" tone="warning" />
+            <Metric icon={FiStar} value={data.reviews.pending} label="Pending Reviews" href="/admin/reviews" />
+          </MetricSection>
+          <MetricSection title="Store snapshot" description="Catalogue, customers, and support activity" compact>
+            <Metric icon={FiPackage} value={data.stats.activeProducts + data.stats.inactiveProducts} label="Total Products" href="/admin/products" />
+            <Metric icon={FiLayers} value={data.stats.totalCategories} label="Categories" href="/admin/categories" />
+            <Metric icon={FiBox} value={data.stats.totalBrands} label="Brands" href="/admin/brands" />
+            <Metric icon={FiMessageSquare} value={data.enquiries.open} label="Open Enquiries" href="/admin/enquiries" />
+            <Metric icon={FiUsers} value={data.customers.newMonth} label="New This Month" href="/admin/customers" />
+            <Metric icon={FiStar} value={data.reviews.averageRating.toFixed(1)} label="Average Rating" href="/admin/reviews" />
+          </MetricSection>
           <section className={styles.twoColumn}>
             <article className={styles.panel}>
               <div className={styles.panelHeader}>
-                <h2>Sales Overview</h2>
-                <span>Current catalogue</span>
+                <h2>Order Pipeline</h2>
+                <Link href="/admin/orders">View orders</Link>
               </div>
-              <div
-                className={styles.chartPlaceholder}
-                aria-label="Sales chart placeholder"
-              >
-                <span style={{ height: "35%" }} />
-                <span style={{ height: "58%" }} />
-                <span style={{ height: "44%" }} />
-                <span style={{ height: "76%" }} />
-                <span style={{ height: "66%" }} />
-                <span style={{ height: "90%" }} />
-                <span style={{ height: "74%" }} />
-              </div>
+              <OrderPipeline orders={data.orders} />
             </article>
             <article className={styles.panel}>
               <div className={styles.panelHeader}>
@@ -156,6 +105,59 @@ export default function AdminDashboard() {
     </AdminLayout>
   );
 }
+function MetricSection({ title, description, primary, compact, children }) {
+  return (
+    <section className={styles.metricSection}>
+      <div className={styles.sectionHeading}>
+        <div>
+          <h2>{title}</h2>
+          <p>{description}</p>
+        </div>
+      </div>
+      <div
+        className={`${styles.metricGrid} ${primary ? styles.primaryMetrics : ""} ${compact ? styles.compactMetrics : ""}`}
+      >
+        {children}
+      </div>
+    </section>
+  );
+}
+function Metric({ icon: Icon, value, label, href, tone = "default" }) {
+  return (
+    <Link
+      className={`${styles.stat} ${styles[`metric_${tone}`] || ""}`}
+      href={href}
+    >
+      <span><Icon /></span>
+      <div>
+        <strong>{value}</strong>
+        <small>{label}</small>
+      </div>
+    </Link>
+  );
+}
+function OrderPipeline({ orders }) {
+  const stages = [
+      ["Awaiting confirmation", orders.awaitingConfirmation],
+      ["Confirmed / processing", orders.active],
+      ["Packed", orders.packed],
+      ["Out for delivery", orders.outForDelivery],
+      ["Ready for pickup", orders.readyForPickup],
+      ["Delivered today", orders.deliveredToday],
+    ],
+    maximum = Math.max(1, ...stages.map(([, value]) => value));
+  return (
+    <div className={styles.pipeline}>
+      {stages.map(([label, value]) => (
+        <div className={styles.pipelineRow} key={label}>
+          <span>{label}</span>
+          <i><b style={{ width: `${(value / maximum) * 100}%` }} /></i>
+          <strong>{value}</strong>
+        </div>
+      ))}
+    </div>
+  );
+}
 function ReviewPanel({ reviews }) {
   return (
     <article className={styles.panel} style={{ marginTop: 22 }}>
@@ -197,7 +199,7 @@ function CustomerPanel({ customers }) {
               <div>
                 <strong>{u.name}</strong>
                 <small>
-                  {u.email} · {u.status}
+                  {u.phone || u.email || "No contact"} · {u.status}
                 </small>
               </div>
               <Link href={`/admin/customers/${u.id}`}>Open</Link>
